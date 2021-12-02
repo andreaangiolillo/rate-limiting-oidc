@@ -3,7 +3,6 @@ module okta-hosted-login/m
 go 1.17
 
 require (
-	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/okta/okta-jwt-verifier-golang v1.1.1
 	github.com/okta/samples-golang v0.0.0-20211027153507-a908fb6101b2
@@ -11,6 +10,7 @@ require (
 
 require (
 	github.com/goccy/go-json v0.3.5 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.7 // indirect
 	github.com/lestrrat-go/httpcc v1.0.0 // indirect
 	github.com/lestrrat-go/iter v1.0.0 // indirect
