@@ -22,6 +22,7 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 )
@@ -116,7 +117,7 @@ func (s *Store) ExchangeCodeRequest(code string, r *http.Request) (*Exchange, er
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			log.Printf("error closing source: %s", err)
 		}
 	}(resp.Body)
 
@@ -150,7 +151,7 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			log.Printf("error closing source: %s", err)
 		}
 	}(resp.Body)
 
