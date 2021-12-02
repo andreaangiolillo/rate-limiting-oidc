@@ -22,7 +22,7 @@ cd rate-limiting-oidc
 
 Then install dependencies:
 ```bash
-go get
+make setup
 ```
 
 You also need to gather the following information from the Okta Developer Console:
