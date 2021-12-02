@@ -24,7 +24,7 @@ go get
 
 You also need to gather the following information from the Okta Developer Console:
 - **Client ID** and **Client Secret** - These can be found on the "General" tab of the Web application that you created earlier in the Okta Developer Console.
-- **Issuer** - This is the URL of the authorization server that will perform authentication.  All Developer Accounts have a "default" authorization server.  The issuer is a combination of your Org URL (found in the upper right of the console home page) and `/oauth2/default`. For example, `https://dev-1234.oktapreview.com/oauth2/default`.
+- **Issuer** - This is the URL of the authorization server that will perform authentication.  We use https://mongodb-qa.oktapreview.com/oauth2/default.
 
 Now that you have the information that you need, you can fill `.env` with them or defining the env variables  `CLIENT_ID`, `CLIENT_SECRET` and `ISSUER`.
 
@@ -46,4 +46,6 @@ If you see a home page that prompts you to login, then things are working!  Clic
 
 You can login with the same account that you created when signing up for [mongodb-qa.oktapreview.com](https://wiki.corp.mongodb.com/pages/viewpage.action?spaceKey=MMS&title=Cloud+IAM%27s+Okta+Usage), or you can use a known username and password from your Okta Directory.
 
-**Note:** If you are currently using your Developer Console, you already have a Single Sign-On (SSO) session for your Org.  You will be automatically logged into your application as the same user that is using the Developer Console.  You may want to use an incognito tab to test the flow from a blank slate.
+**Note:** 
+If you are currently using your Developer Console, you already have a Single Sign-On (SSO) session for your Org.  You will be automatically logged into your application as the same user that is using the Developer Console.  
+**You may want to use an incognito tab to test the flow from a blank slate.**
