@@ -18,7 +18,6 @@ deps:  ## Download go module dependencies
 setup: deps setupgolangcilint ## Set up dev env
 	@echo "==> Installing dev tools..."
 	go install github.com/google/addlicense@latest
-	go install github.com/golang/mock/mockgen@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 
 .PHONY: link-git-hooks
@@ -40,3 +39,8 @@ lint: ## Run linter
 fix-lint: ## Fix linting errors
 	@echo "==> Fixing lint errors"
 	golangci-lint run --fix
+
+.PHONY: help
+.DEFAULT_GOAL := help
+help:
+	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
