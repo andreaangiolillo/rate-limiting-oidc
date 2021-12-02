@@ -3,6 +3,9 @@ This example shows you how to use Golang to login to your application with an Ok
 
 This repository uses https://github.com/okta/samples-golang as a starting point.
 
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/5663078/144407294-6f6bd4e7-32a0-4b5e-82a4-81370fba1e0f.gif)
+
+
 ## Prerequisites
 
 Before running this sample, you will need the following:
