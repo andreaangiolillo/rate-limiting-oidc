@@ -1,0 +1,83 @@
+{{template "header" .}}
+<div id="content" class="container">
+
+  <div>
+    <h2>My Profile</h2>
+    <p>Hello, <span>{{ .Profile.Name }}</span>. Below is the information that was read from the userinfo endpoint with
+      your <a href="https://developer.okta.com/docs/api/resources/oidc.html#get-user-information" target="_blank">Access Token</a> .
+    </p>
+
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Claim</th>
+      <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>{{ "Name" }}</td>
+          <td id="claim-Name">{{ .Profile.Name }}</td>
+        </tr>
+        <tr>
+          <td>{{ "Email" }}</td>
+          <td id="claim-Email">{{ .Profile.Email }}</td>
+        </tr>
+        <tr>
+          <td>{{ "Sub" }}</td>
+          <td id="claim-Sub">{{ .Profile.Sub }}</td>
+        </tr>
+        <tr>
+          <td>{{ "Locale" }}</td>
+          <td id="claim-Locale">{{ .Profile.Locale }}</td>
+        </tr>
+        <tr>
+          <td>{{ "PreferredUsername" }}</td>
+          <td id="claim-PreferredUsername">{{ .Profile.PreferredUsername }}</td>
+        </tr>
+        <tr>
+          <td>{{ "GivenName" }}</td>
+          <td id="claim-GivenName">{{ .Profile.GivenName }}</td>
+        </tr>
+        <tr>
+          <td>{{ "FamilyName" }}</td>
+          <td id="claim-FamilyName">{{ .Profile.FamilyName }}</td>
+        </tr>
+        <tr>
+          <td>{{ "ZoneInfo" }}</td>
+          <td id="claim-ZoneInfo">{{ .Profile.ZoneInfo }}</td>
+        </tr>
+        <tr>
+          <td>{{ "UpdatedAt" }}</td>
+          <td id="claim-UpdatedAt">{{ .Profile.UpdatedAt }}</td>
+        </tr>
+        <tr>
+          <td>{{ "EmailVerified" }}</td>
+          <td id="claim-EmailVerified">{{ .Profile.EmailVerified }}</td>
+        </tr>
+        <tr>
+          <td>{{ "LastName" }}</td>
+          <td id="claim-LastName">{{ .Profile.LastName }}</td>
+        </tr>
+        <tr>
+          <td>{{ "FirstName" }}</td>
+          <td id="claim-FirstName">{{ .Profile.FirstName }}</td>
+        </tr>
+        <tr>
+          <td>{{ "Test" }}</td>
+          <td id="claim-Test">{{ .Profile.Test }}</td>
+        </tr>
+        <tr>
+          <td>{{ "Login" }}</td>
+          <td id="claim-Login">{{ .Profile.Login }}</td>
+        </tr>
+        <tr>
+          <td>{{ "PrimaryEmail" }}</td>
+          <td id="claim-Login">{{ .Profile.PrimaryEmail }}</td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+{{template "footer"}}
