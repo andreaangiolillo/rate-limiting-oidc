@@ -35,6 +35,7 @@ func NewSession() *Session {
 
 func (s *Session) newSessionStore() {
 	s.sessionStore = gsessions.NewFilesystemStore("", []byte(SessionName))
+	s.sessionStore.MaxLength(0)
 }
 
 func (s *Session) Session(req *http.Request) (*gsessions.Session, error) {

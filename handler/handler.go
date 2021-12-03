@@ -72,7 +72,7 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, exchange.ErrorDescription, http.StatusInternalServerError)
 	}
 
-	_, verificationError := verifyToken(exchange.IdToken)
+	idToken, verificationError := verifyToken(exchange.IdToken)
 
 	if verificationError != nil {
 		fmt.Println(verificationError)
@@ -86,6 +86,7 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if verificationError == nil {
 		session.Values["id_token"] = exchange.IdToken
 		session.Values["access_token"] = exchange.AccessToken
+		session.Values["email"] = idToken.Claims["primaryEmail"]
 
 		err := s.Session.Save(r, w, session)
 		if err != nil {
@@ -121,6 +122,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	delete(session.Values, "id_token")
 	delete(session.Values, "access_token")
+	delete(session.Values, "email")
 
 	err = s.Session.Save(r, w, session)
 	if err != nil {

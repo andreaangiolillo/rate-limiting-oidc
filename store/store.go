@@ -25,13 +25,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/casbin/casbin/v2"
 )
 
 type Store struct {
-	Session *Session
-	TPL     *template.Template
-	Nonce   string
-	State   string
+	Session  *Session
+	TPL      *template.Template
+	Enforcer *casbin.Enforcer
+	Nonce    string
+	State    string
 }
 
 type Exchange struct {
@@ -63,11 +66,13 @@ type Profile struct {
 }
 
 func New() *Store {
+	e, _ := casbin.NewEnforcer("/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/model.conf", "/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/policy.csv")
 	return &Store{
-		Session: NewSession(),
-		TPL:     template.Must(template.ParseGlob("templates/*")),
-		Nonce:   "NonceNotSetYet",
-		State:   generateState(),
+		Session:  NewSession(),
+		TPL:      template.Must(template.ParseGlob("templates/*")),
+		Enforcer: e,
+		Nonce:    "NonceNotSetYet",
+		State:    generateState(),
 	}
 }
 
@@ -133,10 +138,16 @@ func (s *Store) ExchangeCodeRequest(code string, r *http.Request) (*Exchange, er
 func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 	// Endpoint: https://developer.okta.com/docs/reference/api/oidc/#userinfo
 	var profile *Profile
+
 	session, err := s.Session.Session(r)
 
 	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" {
 		return profile, nil
+	}
+
+	email := session.Values["email"]
+	if res, _ := s.Enforcer.Enforce(email, "profile", "read"); !res {
+		log.Printf("%s cannot %s the resource %s", email, "read", "profile")
 	}
 
 	reqUrl := os.Getenv("ISSUER") + "/v1/userinfo"

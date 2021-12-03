@@ -9,6 +9,8 @@ require (
 )
 
 require (
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
+	github.com/casbin/casbin/v2 v2.39.1 // indirect
 	github.com/goccy/go-json v0.3.5 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.7 // indirect

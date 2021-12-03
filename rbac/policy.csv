@@ -1,0 +1,6 @@
+p, andrea.angiolillo@mongodb.com, profile, read
+p, bob, profile, write
+p, admin, profile, read
+p, admin, profile, write
+
+g, andrea.angiolillo@mongodb.com, admin
