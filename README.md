@@ -54,3 +54,11 @@ You can login with the same account that you created when signing up for [mongod
 **Note:** 
 If you are currently using your Developer Console, you already have a Single Sign-On (SSO) session for your Org.  You will be automatically logged into your application as the same user that is using the Developer Console.  
 **You may want to use an incognito tab to test the flow from a blank slate.**
+
+## Useful Resources
+- [Casbin and Multi-Threading](https://casbin.org/docs/en/multi-threading)
+- [Casbin - RBAC API](https://casbin.org/docs/en/rbac-api)
+- [Casbin - Admin UI](https://casbin.org/docs/en/admin-portal)
+- [OKTA - Create an app integration](https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/main/#create-an-okta-app-integration)
+- [OKTA - OIDC API](https://developer.okta.com/docs/reference/api/oidc/)
+- [OKTA - Authorization Code Flow](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code)
