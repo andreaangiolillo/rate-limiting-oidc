@@ -16,6 +16,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"okta-hosted-login/m/store"
 	"os"
@@ -29,18 +30,20 @@ type customData struct {
 	Profile         *store.Profile
 	IsAuthenticated bool
 	IsAdmin         bool
+	IsReadOnly      bool
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	profile, err := s.ProfileDataRequest(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print(err.Error())
 	}
 
 	data := customData{
 		Profile:         profile,
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
+		IsReadOnly:      s.IsReadOnly(r),
 	}
 
 	err = s.TPL.ExecuteTemplate(w, "home.gohtml", data)
@@ -102,13 +105,14 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	profile, err := s.ProfileDataRequest(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print(err.Error())
 	}
 
 	data := customData{
 		Profile:         profile,
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
+		IsReadOnly:      s.IsReadOnly(r),
 	}
 
 	err = s.TPL.ExecuteTemplate(w, "profile.gohtml", data)

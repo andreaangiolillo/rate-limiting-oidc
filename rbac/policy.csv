@@ -1,5 +1,4 @@
-p, andrea.angiolillo@mongodb.com, profile, read
-p, bob, profile, write
+p, 10gen-cloud-rate-limiting-read-only, profile, read
 p, admin, profile, read
 p, admin, profile, write
 

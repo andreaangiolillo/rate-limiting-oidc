@@ -3,14 +3,23 @@
 
 <div id="content" class="ui text container">
   <h2>Rate Limiting - OIDC Authentication/Authorization</h2>
-
 {{if .IsAuthenticated}}
-  <div>
-    <p>Welcome back, <span>{{.Profile.Name}}</span>!</p>
-    <p>You have successfully authenticated against your Okta org, and have been redirected back to this application.</p>
-    <p>Visit the <a href="profile">My Profile</a> page in this application to view the information
-      retrieved with your OAuth Access Token.</p>
-  </div>
+    {{if or .IsAdmin .IsReadOnly}}
+      <div>
+        <p>Welcome back, <span>{{.Profile.Name}}</span>!</p>
+        <p>You have successfully authenticated against your Okta org, and have been redirected back to this application.</p>
+        <p>Visit the <a href="profile">My Profile</a> page in this application to view the information
+          retrieved with your OAuth Access Token.</p>
+        {{if .IsAdmin }}
+          <p> You have the "10gen-cloud" group. You are an Admin, you can read/write your Profile</p>
+        {{end}}
+        {{if .IsReadOnly }}
+          <p> You have the "10gen-cloud-rate-limiting-read-only" group. You can read your Profile</p>
+        {{end}}
+      </div>
+    {{else}}
+      <p> You cannot read your Profile. You need the "10gen-cloud-rate-limiting-read-only" or "10gen-cloud" groups to do so. </p>
+    {{end}}
   {{else}}
   <div>
     <p>Hello!</p>

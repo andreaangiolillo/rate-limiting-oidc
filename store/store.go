@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -30,7 +31,10 @@ import (
 	"github.com/casbin/casbin/v2"
 )
 
-const adminGroup = "10gen-cloud"
+const (
+	readOnlyGroup = "10gen-cloud-rate-limiting-read-only"
+	adminGroup    = "10gen-cloud"
+)
 
 type Store struct {
 	Session *Session
@@ -146,17 +150,13 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 
 	session, err := s.Session.Session(r)
 
-	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" {
+	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" || session.Values["globalGroups"] == nil {
 		return profile, nil
 	}
 
 	groups := session.Values["globalGroups"]
-	if groups == nil {
-		return nil, nil
-	}
-
 	if isAllowed := s.RBAC.Enforce(groups.([]interface{}), "profile", "read"); !isAllowed {
-		return nil, nil
+		return profile, fmt.Errorf("you are not allowed to access the resource %s", "profile")
 	}
 
 	reqUrl := os.Getenv("ISSUER") + "/v1/userinfo"
@@ -184,6 +184,14 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 }
 
 func (s *Store) IsAdmin(r *http.Request) bool {
+	return s.hasGroup(r, adminGroup)
+}
+
+func (s *Store) IsReadOnly(r *http.Request) bool {
+	return s.hasGroup(r, readOnlyGroup)
+}
+
+func (s *Store) hasGroup(r *http.Request, g string) bool {
 	session, err := s.Session.Session(r)
 	if err != nil {
 		return false
@@ -195,7 +203,7 @@ func (s *Store) IsAdmin(r *http.Request) bool {
 	}
 
 	for _, group := range groups.([]interface{}) {
-		if group == adminGroup {
+		if group == g {
 			return true
 		}
 	}
