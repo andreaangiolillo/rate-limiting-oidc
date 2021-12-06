@@ -23,6 +23,9 @@
     {{if .IsAuthenticated}}
       <li><a id="profile-button" href="/profile">My Profile</a></li>
     {{end}}
+    {{if .IsAdmin}}
+      <li><a id="profile-button" href="/profile">You're an Admin</a></li>
+    {{end}}
     </ul>
   {{if .IsAuthenticated}}
     <form method="post" action="/logout" class="navbar-form navbar-right">

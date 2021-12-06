@@ -24,17 +24,20 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"okta-hosted-login/m/rbac"
 	"os"
 
 	"github.com/casbin/casbin/v2"
 )
 
+const adminGroup = "10gen-cloud"
+
 type Store struct {
-	Session  *Session
-	TPL      *template.Template
-	Enforcer *casbin.Enforcer
-	Nonce    string
-	State    string
+	Session *Session
+	TPL     *template.Template
+	RBAC    *rbac.RBAC
+	Nonce   string
+	State   string
 }
 
 type Exchange struct {
@@ -68,11 +71,13 @@ type Profile struct {
 func New() *Store {
 	e, _ := casbin.NewEnforcer("/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/model.conf", "/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/policy.csv")
 	return &Store{
-		Session:  NewSession(),
-		TPL:      template.Must(template.ParseGlob("templates/*")),
-		Enforcer: e,
-		Nonce:    "NonceNotSetYet",
-		State:    generateState(),
+		Session: NewSession(),
+		TPL:     template.Must(template.ParseGlob("templates/*")),
+		RBAC: &rbac.RBAC{
+			Enforcer: e,
+		},
+		Nonce: "NonceNotSetYet",
+		State: generateState(),
 	}
 }
 
@@ -145,9 +150,13 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 		return profile, nil
 	}
 
-	email := session.Values["email"]
-	if res, _ := s.Enforcer.Enforce(email, "profile", "read"); !res {
-		log.Printf("%s cannot %s the resource %s", email, "read", "profile")
+	groups := session.Values["globalGroups"]
+	if groups == nil {
+		return nil, nil
+	}
+
+	if isAllowed := s.RBAC.Enforce(groups.([]interface{}), "profile", "read"); !isAllowed {
+		return nil, nil
 	}
 
 	reqUrl := os.Getenv("ISSUER") + "/v1/userinfo"
@@ -172,4 +181,23 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 	}
 
 	return profile, nil
+}
+
+func (s *Store) IsAdmin(r *http.Request) bool {
+	session, err := s.Session.Session(r)
+	if err != nil {
+		return false
+	}
+
+	groups := session.Values["globalGroups"]
+	if groups == nil {
+		return false
+	}
+
+	for _, group := range groups.([]interface{}) {
+		if group == adminGroup {
+			return true
+		}
+	}
+	return false
 }

@@ -28,6 +28,7 @@ var s = store.New()
 type customData struct {
 	Profile         *store.Profile
 	IsAuthenticated bool
+	IsAdmin         bool
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +40,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	data := customData{
 		Profile:         profile,
 		IsAuthenticated: isAuthenticated(r),
+		IsAdmin:         s.IsAdmin(r),
 	}
 
 	err = s.TPL.ExecuteTemplate(w, "home.gohtml", data)
@@ -86,7 +88,7 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if verificationError == nil {
 		session.Values["id_token"] = exchange.IdToken
 		session.Values["access_token"] = exchange.AccessToken
-		session.Values["email"] = idToken.Claims["primaryEmail"]
+		session.Values["globalGroups"] = idToken.Claims["globalGroups"]
 
 		err := s.Session.Save(r, w, session)
 		if err != nil {
@@ -106,6 +108,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	data := customData{
 		Profile:         profile,
 		IsAuthenticated: isAuthenticated(r),
+		IsAdmin:         s.IsAdmin(r),
 	}
 
 	err = s.TPL.ExecuteTemplate(w, "profile.gohtml", data)
@@ -150,6 +153,7 @@ func verifyToken(t string) (*verifier.Jwt, error) {
 	}
 
 	result, err := jv.New().VerifyIdToken(t)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s", err)
 	}

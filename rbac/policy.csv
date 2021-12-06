@@ -3,4 +3,4 @@ p, bob, profile, write
 p, admin, profile, read
 p, admin, profile, write
 
-g, andrea.angiolillo@mongodb.com, admin
+g, 10gen-cloud, admin
