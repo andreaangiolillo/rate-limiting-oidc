@@ -7,6 +7,7 @@ This repository uses https://github.com/okta/samples-golang as a starting point.
 
 ## Authentication and Authorisation 
 This POC uses Okta OIDC to perform authentication and [casbin](https://github.com/casbin/casbin) to perform RBAC Authorisation using the user's globalGroups. 
+
 These are the allowed groups:
 - "10gen-cloud": The user inside this group is an Admin
 - "10gen-cloud-rate-limiting-read-only": The user inside this group has read-only access to their profile
