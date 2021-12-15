@@ -28,6 +28,7 @@ var s = store.New()
 
 type customData struct {
 	Profile         *store.Profile
+	AccessToken     string
 	IsAuthenticated bool
 	IsAdmin         bool
 	IsReadOnly      bool
@@ -41,6 +42,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := customData{
 		Profile:         profile,
+		AccessToken:     newAccessToken(r),
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
 		IsReadOnly:      s.IsReadOnly(r),
@@ -110,6 +112,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := customData{
 		Profile:         profile,
+		AccessToken:     newAccessToken(r),
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
 		IsReadOnly:      s.IsReadOnly(r),
@@ -145,6 +148,15 @@ func isAuthenticated(r *http.Request) bool {
 		return false
 	}
 	return true
+}
+
+func newAccessToken(r *http.Request) string {
+	session, err := s.Session.Session(r)
+	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" {
+		return ""
+	}
+
+	return session.Values["access_token"].(string)
 }
 
 func verifyToken(t string) (*verifier.Jwt, error) {

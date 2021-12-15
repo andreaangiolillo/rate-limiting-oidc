@@ -35,4 +35,24 @@
   {{end}}
 
 </div>
+
+{{if or .IsAdmin .IsReadOnly}}
+  <div id="content" class="ui text container">
+    <h3>Your Access Token:</h3>
+    <div style="width: 61%;word-wrap: break-word;">
+      <code>{{.AccessToken}}</code>
+    </div>
+    <h3>Try to retrieve your profile with our programmatic APIs</h3>
+    <div style="width: 61%;word-wrap: break-word;">
+    <pre>
+      <code>
+        curl  --request GET \
+            --url https://$(URL)/api/profile \
+            --header 'authorization: Bearer $(ACCESS_TOKEN)' \
+            --header 'content-type: application/json'
+     </code>
+    </pre>
+    </div>
+  </div>
+{{end}}
 {{template "footer"}}
