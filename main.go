@@ -21,7 +21,6 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-
 	oktaUtils "github.com/okta/samples-golang/okta-hosted-login/utils"
 )
 
