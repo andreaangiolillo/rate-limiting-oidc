@@ -36,7 +36,7 @@ func main() {
 	router.HandleFunc("/logout", handler.LogoutHandler)
 
 	// Programmatic APIs
-	router.HandleFunc("/api/profile", nil)
+	router.HandleFunc("/api/profile", handler.ProgrammaticProfileHandler).Methods("GET")
 
 	log.Print("server starting at localhost:8080 ... ")
 	err := http.ListenAndServe("localhost:8080", router)

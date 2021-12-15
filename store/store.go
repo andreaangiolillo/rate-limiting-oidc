@@ -42,6 +42,7 @@ type Store struct {
 	RBAC    *rbac.RBAC
 	Nonce   string
 	State   string
+	Users   map[string]interface{}
 }
 
 type Exchange struct {
@@ -74,6 +75,7 @@ type Profile struct {
 
 func New() *Store {
 	e, _ := casbin.NewEnforcer("/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/model.conf", "/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/policy.csv")
+	m := make(map[string]interface{})
 	return &Store{
 		Session: NewSession(),
 		TPL:     template.Must(template.ParseGlob("templates/*")),
@@ -82,6 +84,7 @@ func New() *Store {
 		},
 		Nonce: "NonceNotSetYet",
 		State: generateState(),
+		Users: m,
 	}
 }
 
@@ -145,24 +148,35 @@ func (s *Store) ExchangeCodeRequest(code string, r *http.Request) (*Exchange, er
 }
 
 func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
-	// Endpoint: https://developer.okta.com/docs/reference/api/oidc/#userinfo
-	var profile *Profile
-
 	session, err := s.Session.Session(r)
-
 	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" || session.Values["globalGroups"] == nil {
-		return profile, nil
+		return nil, nil
 	}
 
-	groups := session.Values["globalGroups"]
-	if isAllowed := s.RBAC.Enforce(groups.([]interface{}), "profile", "read"); !isAllowed {
+	accessToken := fmt.Sprintf("Bearer %s", session.Values["access_token"].(string))
+	groups := session.Values["globalGroups"].([]interface{})
+	return s.Profile(accessToken, groups)
+}
+
+func (s *Store) profileEnforcer(groups []interface{}) bool {
+	if isAllowed := s.RBAC.Enforce(groups, "profile", "read"); !isAllowed {
+		return false
+	}
+
+	return true
+}
+
+func (s *Store) Profile(accessToken string, groups []interface{}) (*Profile, error) {
+	// Endpoint: https://developer.okta.com/docs/reference/api/oidc/#userinfo
+	var profile *Profile
+	if ok := s.profileEnforcer(groups); !ok {
 		return profile, fmt.Errorf("you are not allowed to access the resource %s", "profile")
 	}
 
 	reqUrl := os.Getenv("ISSUER") + "/v1/userinfo"
 	req, _ := http.NewRequest("GET", reqUrl, bytes.NewReader([]byte("")))
 	h := req.Header
-	h.Add("Authorization", "Bearer "+session.Values["access_token"].(string))
+	h.Add("Authorization", accessToken)
 	h.Add("Accept", "application/json")
 
 	client := &http.Client{}
@@ -175,7 +189,7 @@ func (s *Store) ProfileDataRequest(r *http.Request) (*Profile, error) {
 		}
 	}(resp.Body)
 
-	err = json.Unmarshal(body, &profile)
+	err := json.Unmarshal(body, &profile)
 	if err != nil {
 		return nil, err
 	}

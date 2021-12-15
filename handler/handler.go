@@ -15,11 +15,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"okta-hosted-login/m/store"
 	"os"
+	"strings"
 
 	verifier "github.com/okta/okta-jwt-verifier-golang"
 )
@@ -91,6 +93,7 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if verificationError == nil {
+		s.Users[exchange.AccessToken] = idToken.Claims["globalGroups"]
 		session.Values["id_token"] = exchange.IdToken
 		session.Values["access_token"] = exchange.AccessToken
 		session.Values["globalGroups"] = idToken.Claims["globalGroups"]
@@ -140,6 +143,31 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func ProgrammaticProfileHandler(w http.ResponseWriter, r *http.Request) {
+	token := strings.TrimSpace(strings.Replace(r.Header.Get("Authorization"), "Bearer ", "", 1))
+	if token == "" {
+		http.Error(w, "Missing JWT Token", http.StatusBadRequest)
+		return
+	}
+
+	groups := s.Users[token]
+	if groups == nil {
+		http.Error(w, "Not Valid Bearer Token", http.StatusBadRequest)
+		return
+	}
+
+	accessToken := fmt.Sprintf("Bearer %s", token)
+	profile, err := s.Profile(accessToken, groups.([]interface{}))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	err = json.NewEncoder(w).Encode(profile)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func isAuthenticated(r *http.Request) bool {
