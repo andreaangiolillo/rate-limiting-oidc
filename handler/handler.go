@@ -18,19 +18,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"okta-hosted-login/m/store"
 	"os"
 	"strings"
+	"time"
 
 	verifier "github.com/okta/okta-jwt-verifier-golang"
 )
 
+const charset = "abcdefghijklmnopqrstuvwxyz" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var seededRand = rand.New(
+	rand.NewSource(time.Now().UnixNano()))
 var s = store.New()
 
 type customData struct {
 	Profile         *store.Profile
-	AccessToken     string
+	APIToken        string
 	IsAuthenticated bool
 	IsAdmin         bool
 	IsReadOnly      bool
@@ -44,7 +51,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := customData{
 		Profile:         profile,
-		AccessToken:     newAccessToken(r),
+		APIToken:        newAPIToken(r),
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
 		IsReadOnly:      s.IsReadOnly(r),
@@ -93,10 +100,12 @@ func AuthCodeCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if verificationError == nil {
-		s.Users[exchange.AccessToken] = idToken.Claims["globalGroups"]
+		apiToken := generateAPIToken(22)
+		s.Users[apiToken] = idToken.Claims["globalGroups"]
 		session.Values["id_token"] = exchange.IdToken
 		session.Values["access_token"] = exchange.AccessToken
 		session.Values["globalGroups"] = idToken.Claims["globalGroups"]
+		session.Values["apiToken"] = apiToken
 
 		err := s.Session.Save(r, w, session)
 		if err != nil {
@@ -115,7 +124,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := customData{
 		Profile:         profile,
-		AccessToken:     newAccessToken(r),
+		APIToken:        newAPIToken(r),
 		IsAuthenticated: isAuthenticated(r),
 		IsAdmin:         s.IsAdmin(r),
 		IsReadOnly:      s.IsReadOnly(r),
@@ -136,6 +145,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	delete(session.Values, "id_token")
 	delete(session.Values, "access_token")
 	delete(session.Values, "email")
+	delete(session.Values, "apiToken")
 
 	err = s.Session.Save(r, w, session)
 	if err != nil {
@@ -148,23 +158,22 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func ProgrammaticProfileHandler(w http.ResponseWriter, r *http.Request) {
 	token := strings.TrimSpace(strings.Replace(r.Header.Get("Authorization"), "Bearer ", "", 1))
 	if token == "" {
-		http.Error(w, "Missing JWT Token", http.StatusBadRequest)
+		http.Error(w, "Missing API Token", http.StatusBadRequest)
 		return
 	}
 
 	groups := s.Users[token]
 	if groups == nil {
-		http.Error(w, "Not Valid Bearer Token", http.StatusBadRequest)
+		http.Error(w, "Not Valid API Token", http.StatusBadRequest)
 		return
 	}
 
-	accessToken := fmt.Sprintf("Bearer %s", token)
-	profile, err := s.Profile(accessToken, groups.([]interface{}))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	profile := store.Profile{
+		Name:   token,
+		Groups: groups,
 	}
 
-	err = json.NewEncoder(w).Encode(profile)
+	err := json.NewEncoder(w).Encode(profile)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -178,13 +187,13 @@ func isAuthenticated(r *http.Request) bool {
 	return true
 }
 
-func newAccessToken(r *http.Request) string {
+func newAPIToken(r *http.Request) string {
 	session, err := s.Session.Session(r)
-	if err != nil || session.Values["access_token"] == nil || session.Values["access_token"] == "" {
+	if err != nil || session.Values["apiToken"] == nil || session.Values["apiToken"] == "" {
 		return ""
 	}
 
-	return session.Values["access_token"].(string)
+	return session.Values["apiToken"].(string)
 }
 
 func verifyToken(t string) (*verifier.Jwt, error) {
@@ -207,4 +216,16 @@ func verifyToken(t string) (*verifier.Jwt, error) {
 	}
 
 	return nil, fmt.Errorf("token could not be verified: %s", "")
+}
+
+func stringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func generateAPIToken(length int) string {
+	return stringWithCharset(length, charset)
 }

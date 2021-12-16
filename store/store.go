@@ -56,21 +56,22 @@ type Exchange struct {
 }
 
 type Profile struct {
-	Sub               string `json:"sub,omitempty"`
-	Name              string `json:"name,omitempty"`
-	Locale            string `json:"locale,omitempty"`
-	Email             string `json:"email,omitempty"`
-	PreferredUsername string `json:"preferred_username,omitempty"`
-	GivenName         string `json:"given_name,omitempty"`
-	FamilyName        string `json:"family_name,omitempty"`
-	ZoneInfo          string `json:"zoneinfo,omitempty"`
-	UpdatedAt         int    `json:"updated_at,omitempty"`
-	EmailVerified     bool   `json:"email_verified,omitempty"`
-	LastName          string `json:"lastName,omitempty"`
-	FirstName         string `json:"firstName,omitempty"`
-	Test              string `json:"test,omitempty"`
-	Login             string `json:"login,omitempty"`
-	PrimaryEmail      string `json:"primaryEmail,omitempty"`
+	Sub               string      `json:"sub,omitempty"`
+	Name              string      `json:"name,omitempty"`
+	Locale            string      `json:"locale,omitempty"`
+	Email             string      `json:"email,omitempty"`
+	PreferredUsername string      `json:"preferred_username,omitempty"`
+	GivenName         string      `json:"given_name,omitempty"`
+	FamilyName        string      `json:"family_name,omitempty"`
+	ZoneInfo          string      `json:"zoneinfo,omitempty"`
+	UpdatedAt         int         `json:"updated_at,omitempty"`
+	EmailVerified     bool        `json:"email_verified,omitempty"`
+	LastName          string      `json:"lastName,omitempty"`
+	FirstName         string      `json:"firstName,omitempty"`
+	Test              string      `json:"test,omitempty"`
+	Login             string      `json:"login,omitempty"`
+	PrimaryEmail      string      `json:"primaryEmail,omitempty"`
+	Groups            interface{} `json:"groups,omitempty"`
 }
 
 func New() *Store {

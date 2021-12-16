@@ -38,9 +38,9 @@
 
 {{if or .IsAdmin .IsReadOnly}}
   <div id="content" class="ui text container">
-    <h3>Your JWT Token:</h3>
+    <h3>Your API Token:</h3>
     <div style="width: 61%;word-wrap: break-word;">
-      <code>{{.AccessToken}}</code>
+      <code>{{.APIToken}}</code>
     </div>
     <h3>Try to retrieve your profile with our programmatic APIs</h3>
     <div style="width: 61%;word-wrap: break-word;">
@@ -48,7 +48,7 @@
       <code>
         curl  --request GET \
             --url https://$(URL)/api/profile \
-            --header 'authorization: Bearer $(ACCESS_TOKEN)' \
+            --header 'authorization: {{.APIToken}}' \
             --header 'content-type: application/json'
      </code>
     </pre>
