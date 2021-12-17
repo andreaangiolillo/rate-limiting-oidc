@@ -36,7 +36,7 @@
 
 </div>
 
-{{if or .IsAdmin .IsReadOnly}}
+{{if .IsAuthenticated}}
   <div id="content" class="ui text container">
     <h3>Your API Token:</h3>
     <div style="width: 61%;word-wrap: break-word;">
