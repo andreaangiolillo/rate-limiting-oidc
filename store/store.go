@@ -26,6 +26,7 @@ import (
 	"log"
 	"net/http"
 	"okta-hosted-login/m/rbac"
+	"okta-hosted-login/m/utils"
 	"os"
 
 	"github.com/casbin/casbin/v2"
@@ -97,12 +98,13 @@ func generateState() string {
 
 func (s *Store) AuthorizationCodeRequest(r *http.Request) string {
 	// Endpoint: https://developer.okta.com/docs/reference/api/oidc/#authorize
+	host, port := utils.HostnameAndPort()
 	q := r.URL.Query()
 	q.Add("client_id", os.Getenv("CLIENT_ID"))
 	q.Add("response_type", "code")
 	q.Add("response_mode", "query")
 	q.Add("scope", "openid profile email")
-	q.Add("redirect_uri", "http://localhost:8080/authorization-code/callback")
+	q.Add("redirect_uri", fmt.Sprintf("http://%s:%s/authorization-code/callback", host, port))
 	q.Add("state", s.State)
 	q.Add("nonce", s.Nonce)
 	return os.Getenv("ISSUER") + "/v1/authorize?" + q.Encode()
@@ -113,10 +115,11 @@ func (s *Store) ExchangeCodeRequest(code string, r *http.Request) (*Exchange, er
 	authHeader := base64.StdEncoding.EncodeToString(
 		[]byte(os.Getenv("CLIENT_ID") + ":" + os.Getenv("CLIENT_SECRET")))
 
+	host, port := utils.HostnameAndPort()
 	q := r.URL.Query()
 	q.Add("grant_type", "authorization_code")
 	q.Set("code", code)
-	q.Add("redirect_uri", "http://localhost:8080/authorization-code/callback")
+	q.Add("redirect_uri", fmt.Sprintf("http://%s:%s/authorization-code/callback", host, port))
 
 	url := os.Getenv("ISSUER") + "/v1/token?" + q.Encode()
 

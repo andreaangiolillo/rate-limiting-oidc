@@ -67,3 +67,19 @@ func setEnvVariable(env string, current string) {
 		}
 	}
 }
+
+func HostnameAndPort() (string, string) {
+	hostname := "localhost"
+	port := "8080"
+	args := os.Args[1:]
+
+	if len(args) > 0 {
+		hostname = args[0]
+	}
+
+	if len(args) > 1 {
+		port = args[1]
+	}
+
+	return hostname, port
+}

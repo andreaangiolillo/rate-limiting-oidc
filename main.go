@@ -15,17 +15,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"okta-hosted-login/m/handler"
+	"okta-hosted-login/m/utils"
 	"os"
 
 	"github.com/gorilla/mux"
-	oktaUtils "github.com/okta/samples-golang/okta-hosted-login/utils"
 )
 
 func main() {
-	oktaUtils.ParseEnvironment()
+	utils.ParseEnvironment()
+	host, port := utils.HostnameAndPort()
 	router := mux.NewRouter().StrictSlash(true)
 
 	// Web APIs
@@ -38,8 +40,8 @@ func main() {
 	// Programmatic APIs
 	router.HandleFunc("/api/profile", handler.ProgrammaticProfileHandler).Methods("GET")
 
-	log.Print("server starting at localhost:8080 ... ")
-	err := http.ListenAndServe("localhost:8080", router)
+	log.Printf("server starting at %s:%s ...", host, port)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), router)
 	if err != nil {
 		log.Printf("the HTTP server failed to start: %s", err)
 		os.Exit(1)
