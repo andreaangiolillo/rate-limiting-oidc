@@ -28,6 +28,7 @@ import (
 	"okta-hosted-login/m/rbac"
 	"okta-hosted-login/m/utils"
 	"os"
+	"path/filepath"
 
 	"github.com/casbin/casbin/v2"
 )
@@ -76,7 +77,9 @@ type Profile struct {
 }
 
 func New() *Store {
-	e, _ := casbin.NewEnforcer("/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/model.conf", "/Users/andrea.angiolillo/workspace/poc/rate-limiting-oidc/rbac/policy.csv")
+	absPathModel, _ := filepath.Abs("rbac/model.conf")
+	absPathPolicy, _ := filepath.Abs("rbac/policy.csv")
+	e, _ := casbin.NewEnforcer(absPathModel, absPathPolicy)
 	m := make(map[string]interface{})
 	return &Store{
 		Session: NewSession(),
