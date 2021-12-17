@@ -3,11 +3,10 @@ module okta-hosted-login/m
 go 1.17
 
 require (
-	github.com/casbin/casbin/v2 v2.39.1
+	github.com/casbin/casbin/v2 v2.40.4
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/okta/okta-jwt-verifier-golang v1.1.1
-	github.com/okta/samples-golang v0.0.0-20211027153507-a908fb6101b2
 )
 
 require (
