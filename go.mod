@@ -6,7 +6,7 @@ require (
 	github.com/casbin/casbin/v2 v2.43.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
-	github.com/okta/okta-jwt-verifier-golang v1.3.0
+	github.com/okta/okta-jwt-verifier-golang v1.3.1
 )
 
 require (
