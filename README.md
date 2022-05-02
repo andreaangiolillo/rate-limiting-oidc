@@ -43,7 +43,7 @@ CLIENT_SECRET={clientSecret}
 ISSUER=https://mongodb-qa.oktapreview.com/oauth2/default
 ```
 
-Now start the app server:
+Start the app server:
 
 ```
 go run main.go
