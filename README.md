@@ -16,8 +16,8 @@ These are the allowed groups:
 
 Before running this sample, you will need the following:
 
-* A valid user on [mongodb-qa.oktapreview.com](https://wiki.corp.mongodb.com/pages/viewpage.action?spaceKey=MMS&title=Cloud+IAM%27s+Okta+Usage).
-* An Okta Application, configured for Web mode. This is done from the Okta Console and you can find instructions [here](https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/main/#create-an-okta-app-integration).  When following the wizard, use the default properties.
+* A valid user on [mongodb-qa.oktapreview.com](https://wiki.corp.mongodb.com/pages/viewpage.action?spaceKey=MMS&title=Cloud+IAM%27s+Okta+Usage)
+* An Okta Application, configured for Web mode. This is done from the Okta Console and you can find instructions [here](https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/main/#create-an-okta-app-integration).  When following the wizard, use the default properties
 
 ## Running This Example
 
